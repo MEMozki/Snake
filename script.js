@@ -112,7 +112,7 @@ function draw() {
         });
     });
 
-    ctx.fillStyle = 'red'; // Изменён цвет яблока на красный
+    ctx.fillStyle = 'red'; // Убедитесь, что цвет установлен в красный
     ctx.fillRect(food.position.x * scale, food.position.y * scale, scale, scale);
 }
 
