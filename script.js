@@ -175,6 +175,7 @@ function setup() {
     food = new Food();
     generation++;
     generationSpan.innerText = generation;
+    console.log('Setup complete. Generation:', generation);
 }
 
 function draw() {
