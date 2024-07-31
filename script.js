@@ -24,7 +24,7 @@ let epsilon = initialEpsilon;
 const colors = ["#FF5733", "#33FF57", "#3357FF", "#F3FF33", "#FF33F3"];
 
 class Snake {
-    constructor(qTable = {}, color = '#FFF') {
+    constructor(qTable = {}) {
         this.body = [{ x: Math.floor(columns / 2), y: Math.floor(rows / 2) }];
         this.direction = { x: 1, y: 0 };
         this.growPending = false;
@@ -32,7 +32,6 @@ class Snake {
         this.qTable = qTable;
         this.state = this.getState();
         this.totalReward = 0;
-        this.color = color;
     }
 
     update() {
@@ -52,7 +51,6 @@ class Snake {
 
         if (this.checkCollision()) {
             this.alive = false;
-            console.log(`Snake with color ${this.color} collided.`);
         }
     }
 
@@ -170,12 +168,11 @@ class Food {
 function setup() {
     snakes = [];
     for (let i = 0; i < numSnakes; i++) {
-        snakes.push(new Snake({}, colors[i % colors.length]));
+        snakes.push(new Snake());
     }
     food = new Food();
     generation++;
     generationSpan.innerText = generation;
-    console.log('Setup complete. Generation:', generation);
 }
 
 function draw() {
@@ -183,7 +180,7 @@ function draw() {
 
     snakes.forEach(snake => {
         if (!snake.alive) return;
-        ctx.fillStyle = snake.color;
+        ctx.fillStyle = '#FFF';
         snake.body.forEach(part => {
             ctx.fillRect(part.x * scale, part.y * scale, scale, scale);
         });
