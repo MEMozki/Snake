@@ -1,6 +1,7 @@
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 const generationSpan = document.getElementById('generation');
+const liveSnakesSpan = document.getElementById('live-snakes');
 
 const canvasSize = 400;
 canvas.width = canvasSize;
@@ -21,6 +22,12 @@ class Snake {
         this.direction = { x: 1, y: 0 };
         this.growPending = false;
         this.alive = true;
+        this.directions = [
+            { x: 1, y: 0 },
+            { x: -1, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: -1 }
+        ];
     }
 
     update() {
@@ -48,6 +55,13 @@ class Snake {
         if (newDirection.x !== oppositeDirection.x || newDirection.y !== oppositeDirection.y) {
             this.direction = newDirection;
         }
+    }
+
+    randomDirection() {
+        const validDirections = this.directions.filter(dir => 
+            dir.x !== -this.direction.x || dir.y !== -this.direction.y
+        );
+        return validDirections[Math.floor(Math.random() * validDirections.length)];
     }
 
     grow() {
@@ -107,33 +121,27 @@ function draw() {
 
 function update() {
     snakes.forEach(snake => {
-        snake.update();
+        if (snake.alive) {
+            snake.update();
 
-        if (snake.alive && snake.body[0].x === food.position.x && snake.body[0].y === food.position.y) {
-            snake.grow();
-            food = new Food();
+            if (snake.body[0].x === food.position.x && snake.body[0].y === food.position.y) {
+                snake.grow();
+                food = new Food();
+            }
         }
     });
 
     if (snakes.every(snake => !snake.alive)) {
         setup();
     }
-}
 
-function randomDirection() {
-    const directions = [
-        { x: 1, y: 0 },
-        { x: -1, y: 0 },
-        { x: 0, y: 1 },
-        { x: 0, y: -1 }
-    ];
-    return directions[Math.floor(Math.random() * directions.length)];
+    liveSnakesSpan.innerText = snakes.filter(snake => snake.alive).length;
 }
 
 function gameLoop() {
     snakes.forEach(snake => {
-        if (Math.random() < 0.2) {
-            snake.changeDirection(randomDirection());
+        if (Math.random() < 0.2 && snake.alive) {
+            snake.changeDirection(snake.randomDirection());
         }
     });
 
