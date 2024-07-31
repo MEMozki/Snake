@@ -52,6 +52,7 @@ class Snake {
 
         if (this.checkCollision()) {
             this.alive = false;
+            console.log(`Snake with color ${this.color} collided.`);
         }
     }
 
@@ -182,9 +183,9 @@ function draw() {
     snakes.forEach(snake => {
         if (!snake.alive) return;
         ctx.fillStyle = snake.color;
-        for (let part of snake.body) {
+        snake.body.forEach(part => {
             ctx.fillRect(part.x * scale, part.y * scale, scale, scale);
-        }
+        });
     });
 
     ctx.fillStyle = 'white';
