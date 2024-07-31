@@ -9,19 +9,23 @@ canvas.height = canvasSize;
 const scale = 20;
 const rows = canvasSize / scale;
 const columns = canvasSize / scale;
+const numSnakes = 5;
 
-let snake;
+let snakes = [];
 let food;
 let generation = 0;
 
 class Snake {
     constructor() {
-        this.body = [{ x: 10, y: 10 }];
+        this.body = [{ x: Math.floor(columns / 2), y: Math.floor(rows / 2) }];
         this.direction = { x: 1, y: 0 };
         this.growPending = false;
+        this.alive = true;
     }
 
     update() {
+        if (!this.alive) return;
+
         const head = { ...this.body[0] };
         head.x += this.direction.x;
         head.y += this.direction.y;
@@ -33,6 +37,10 @@ class Snake {
         }
 
         this.body.unshift(head);
+
+        if (this.checkCollision()) {
+            this.alive = false;
+        }
     }
 
     changeDirection(newDirection) {
@@ -73,7 +81,10 @@ class Food {
 }
 
 function setup() {
-    snake = new Snake();
+    snakes = [];
+    for (let i = 0; i < numSnakes; i++) {
+        snakes.push(new Snake());
+    }
     food = new Food();
     generation++;
     generationSpan.innerText = generation;
@@ -82,29 +93,50 @@ function setup() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = 'white';
-    for (let part of snake.body) {
-        ctx.fillRect(part.x * scale, part.y * scale, scale, scale);
-    }
+    snakes.forEach(snake => {
+        if (!snake.alive) return;
+        ctx.fillStyle = 'white';
+        for (let part of snake.body) {
+            ctx.fillRect(part.x * scale, part.y * scale, scale, scale);
+        }
+    });
 
     ctx.fillStyle = 'red';
     ctx.fillRect(food.position.x * scale, food.position.y * scale, scale, scale);
 }
 
 function update() {
-    snake.update();
+    snakes.forEach(snake => {
+        snake.update();
 
-    if (snake.body[0].x === food.position.x && snake.body[0].y === food.position.y) {
-        snake.grow();
-        food = new Food();
-    }
+        if (snake.alive && snake.body[0].x === food.position.x && snake.body[0].y === food.position.y) {
+            snake.grow();
+            food = new Food();
+        }
+    });
 
-    if (snake.checkCollision()) {
+    if (snakes.every(snake => !snake.alive)) {
         setup();
     }
 }
 
+function randomDirection() {
+    const directions = [
+        { x: 1, y: 0 },
+        { x: -1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: -1 }
+    ];
+    return directions[Math.floor(Math.random() * directions.length)];
+}
+
 function gameLoop() {
+    snakes.forEach(snake => {
+        if (Math.random() < 0.2) {
+            snake.changeDirection(randomDirection());
+        }
+    });
+
     update();
     draw();
     setTimeout(gameLoop, 100);
