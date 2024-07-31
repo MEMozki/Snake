@@ -7,6 +7,7 @@ body {
     background-color: #000;
     color: #fff;
     margin: 0;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 #game-container {
@@ -18,5 +19,6 @@ canvas {
 }
 
 #info {
-    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
 }
